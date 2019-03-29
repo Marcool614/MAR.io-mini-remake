@@ -8,13 +8,11 @@ WIN_HEIGHT = 740
 DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
 BACKGROUND_COLOR = "black"
 FPS = 50
-FILE_DIR = os.path.dirname(__file__)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 MONSTER_WIDTH = 32
 MONSTER_HEIGHT = 32
-MONSTER_COLOR = "#2110FF"
-ICON_DIR = os.path.dirname(__file__)
+MONSTER_COLOR = "blue"
 PLATFORM_WIDTH = 32
 PLATFORM_HEIGHT = 32
 PLATFORM_COLOR = "black"
@@ -31,15 +29,10 @@ ANIMATION_SUPER_SPEED_DELAY = 0.13 # скорость смены кадров п
 pygame.init()
 
 ANIMATION_MONSTERHORYSONTAL = ['mushroom1.png', 'fire1.png']
-
 ANIMATION_BLOCKTELEPORT = ['portal2.png', 'portal1.png']
-
 ANIMATION_PRINCESS = ['princess_l.png', 'princess_r.png']
-
 ANIMATION_INBLOCKTELEPORT = ['invisiblePortal.png', 'invisiblePortal2.png']
-
 ANIMATION_RIGHT = ['r1.png', 'r2.png', 'r3.png', 'r4.png', 'r5.png']
-
 ANIMATION_LEFT = ['l1.png', 'l2.png', 'l3.png', 'l4.png', 'l5.png']
 ANIMATION_JUMP_LEFT = [('jl.png', 0.1)]
 ANIMATION_JUMP_RIGHT = [('jr.png', 0.1)]
@@ -173,46 +166,45 @@ def camera_configure(camera, target_rect):
     _, _, w, h = camera
     l, t = -l+WIN_WIDTH / 2, -t+WIN_HEIGHT / 2
 
-    l = min(0, l)                           # Не движемся дальше левой границы
-    l = max(-(camera.width-WIN_WIDTH), l)   # Не движемся дальше правой границы
-    t = max(-(camera.height-WIN_HEIGHT), t) # Не движемся дальше нижней границы
-    t = min(0, t)                           # Не движемся дальше верхней границы
-
+    l = min(0, l)
+    l = max(-(camera.width-WIN_WIDTH), l)
+    t = max(-(camera.height-WIN_HEIGHT), t)
+    t = min(0, t)
     return Rect(l, t, w, h) 
 
 
 def loadLevel1():
     global playerX, playerY
 
-    levelFile = open('%s/levels/1.txt' % FILE_DIR)
+    levelFile = open('1.txt')
     line = " "
     commands = []
-    while line[0] != "/": # пока не нашли символ завершения файла
-        line = levelFile.readline() #считываем построчно
-        if line[0] == "[": # если нашли символ начала уровня
-            while line[0] != "]": # то, пока не нашли символ конца уровня
-                line = levelFile.readline() # считываем построчно уровень
-                if line[0] != "]": # и если нет символа конца уровня
-                    endLine = line.find("|") # то ищем символ конца строки
-                    level.append(line[0: endLine]) # и добавляем в уровень строку от начала до символа "|"
+    while line[0] != "/":
+        line = levelFile.readline()
+        if line[0] == "[":
+            while line[0] != "]":
+                line = levelFile.readline()
+                if line[0] != "]":
+                    endLine = line.find("|")
+                    level.append(line[0: endLine])
                     
-        if line[0] != "":  # если строка не пустая
-         commands = line.split()  # разбиваем ее на отдельные команды
-         if len(commands) > 1:  # если количество команд > 1, то ищем эти команды
-            if commands[0] == "player":  # если первая команда - player
-                playerX = int(commands[1])  # то записываем координаты героя
+        if line[0] != "":
+         commands = line.split()
+         if len(commands) > 1:
+            if commands[0] == "player":
+                playerX = int(commands[1])
                 playerY = int(commands[2])
-            if commands[0] == "portal":  # если первая команда portal, то создаем портал
+            if commands[0] == "portal":
                 tp = BlockTeleport(int(commands[1]), int(commands[2]), int(commands[3]), int(commands[4]))
                 entities.add(tp)
                 platforms.append(tp)
                 animatedEntities.add(tp)
-            if commands[0] == "inportal": # если первая команда inportal, то создаем портал
+            if commands[0] == "inportal":
                 itp = InvisibleBlockTeleport(int(commands[1]), int(commands[2]), int(commands[3]), int(commands[4]))
                 entities.add(itp)
                 platforms.append(itp)
                 animatedEntities.add(itp)
-            if commands[0] == "monster": # если первая команда monster, то создаем монстра
+            if commands[0] == "monster":
                 mn = Monster(int(commands[1]), int(commands[2]), int(commands[3]), int(commands[4]),
                              int(commands[5]), int(commands[6]))
                 entities.add(mn)
@@ -227,19 +219,19 @@ class Monster(sprite.Sprite):
         self.image.fill(Color(MONSTER_COLOR))
         self.rect = Rect(x, y, MONSTER_WIDTH, MONSTER_HEIGHT)
         self.image.set_colorkey(Color(MONSTER_COLOR))
-        self.startX = x  # начальные координаты
+        self.startX = x
         self.startY = y
-        self.maxLengthLeft = maxLengthLeft  # максимальное расстояние, которое может пройти в одну сторону
-        self.maxLengthUp = maxLengthUp  # максимальное расстояние, которое может пройти в одну сторону, вертикаль
-        self.xvel = left  # cкорость передвижения по горизонтали, 0 - стоит на месте
-        self.yvel = up  # скорость движения по вертикали, 0 - не двигается
+        self.maxLengthLeft = maxLengthLeft
+        self.maxLengthUp = maxLengthUp
+        self.xvel = left
+        self.yvel = up
         boltAnim = []
         for anim in ANIMATION_MONSTERHORYSONTAL:
             boltAnim.append((anim, 0.3))
         self.boltAnim = pyganim.PygAnimation(boltAnim)
         self.boltAnim.play()
 
-    def update(self, platforms):  # по принципу героя
+    def update(self, platforms):
 
         self.image.fill(Color(MONSTER_COLOR))
         self.boltAnim.blit(self.image, (0, 0))
@@ -250,14 +242,14 @@ class Monster(sprite.Sprite):
         self.collide(platforms)
 
         if (abs(self.startX - self.rect.x) > self.maxLengthLeft):
-            self.xvel = -self.xvel  # если прошли максимальное растояние, то идеи в обратную сторону
+            self.xvel = -self.xvel
         if (abs(self.startY - self.rect.y) > self.maxLengthUp):
-            self.yvel = -self.yvel  # если прошли максимальное растояние, то идеи в обратную сторону, вертикаль
+            self.yvel = -self.yvel
 
     def collide(self, platforms):
         for p in platforms:
-            if sprite.collide_rect(self, p) and self != p:  # если с чем-то или кем-то столкнулись
-                self.xvel = - self.xvel  # то поворачиваем в обратную сторону
+            if sprite.collide_rect(self, p) and self != p:
+                self.xvel = - self.xvel
                 self.yvel = - self.yvel
 
 
@@ -280,8 +272,8 @@ class BlockDie(Platform):
 class BlockTeleport(Platform):
     def __init__(self, x, y, goX, goY):
         Platform.__init__(self, x, y)
-        self.goX = goX  # координаты назначения перемещения
-        self.goY = goY  # координаты назначения перемещения
+        self.goX = goX
+        self.goY = goY
         boltAnim = []
         for anim in ANIMATION_BLOCKTELEPORT:
             boltAnim.append((anim, 0.5))
@@ -296,8 +288,8 @@ class BlockTeleport(Platform):
 class InvisibleBlockTeleport(Platform):
     def __init__(self, x, y, goX, goY):
         Platform.__init__(self, x, y)
-        self.goX = goX  # координаты назначения перемещения
-        self.goY = goY  # координаты назначения перемещения
+        self.goX = goX
+        self.goY = goY
         self.image = image.load("invisiblePortal.png")
 
     def update(self):
@@ -335,16 +327,15 @@ class Saw(Platform):
 class Player(sprite.Sprite):
     def __init__(self, x, y):
         sprite.Sprite.__init__(self)
-        self.xvel = 0  # скорость перемещения. 0 - стоять на месте
-        self.startX = x  # Начальная позиция Х, пригодится когда будем переигрывать уровень
+        self.xvel = 0
+        self.startX = x
         self.startY = y
-        self.yvel = 0  # скорость вертикального перемещения
-        self.onGround = False  # На земле ли я?
+        self.yvel = 0
+        self.onGround = False
         self.image = Surface((WIDTH, HEIGHT))
         self.image.fill(Color(COLOR))
-        self.rect = Rect(x, y, WIDTH, HEIGHT)  # прямоугольный объект
-        self.image.set_colorkey(Color(COLOR))  # делаем фон прозрачным
-        #        Анимация движения вправо
+        self.rect = Rect(x, y, WIDTH, HEIGHT)
+        self.image.set_colorkey(Color(COLOR))
         boltAnim = []
         boltAnimSuperSpeed = []
         for anim in ANIMATION_RIGHT:
@@ -354,7 +345,6 @@ class Player(sprite.Sprite):
         self.boltAnimRight.play()
         self.boltAnimRightSuperSpeed = pyganim.PygAnimation(boltAnimSuperSpeed)
         self.boltAnimRightSuperSpeed.play()
-        #        Анимация движения влево
         boltAnim = []
         boltAnimSuperSpeed = []
         for anim in ANIMATION_LEFT:
@@ -367,7 +357,7 @@ class Player(sprite.Sprite):
 
         self.boltAnimStay = pyganim.PygAnimation(ANIMATION_STAY)
         self.boltAnimStay.play()
-        self.boltAnimStay.blit(self.image, (0, 0))  # По-умолчанию, стоим
+        self.boltAnimStay.blit(self.image, (0, 0))
 
         self.boltAnimJumpLeft = pyganim.PygAnimation(ANIMATION_JUMP_LEFT)
         self.boltAnimJumpLeft.play()
@@ -382,28 +372,28 @@ class Player(sprite.Sprite):
     def update(self, left, right, up, running, platforms):
 
         if up:
-            if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли
+            if self.onGround:
                 self.yvel = -JUMP_POWER
-                if running and (left or right):  # если есть ускорение и мы движемся
-                    self.yvel -= JUMP_EXTRA_POWER  # то прыгаем выше
+                if running and (left or right):
+                    self.yvel -= JUMP_EXTRA_POWER
                 self.image.fill(Color(COLOR))
                 self.boltAnimJump.blit(self.image, (0, 0))
 
         if left:
-            self.xvel = -MOVE_SPEED  # Лево = x- n
+            self.xvel = -MOVE_SPEED
             self.image.fill(Color(COLOR))
-            if running:  # если усkорение
-                self.xvel -= MOVE_EXTRA_SPEED  # то передвигаемся быстрее
-                if not up:  # и если не прыгаем
-                    self.boltAnimLeftSuperSpeed.blit(self.image, (0, 0))  # то отображаем быструю анимацию
-            else:  # если не бежим
-                if not up:  # и не прыгаем
-                    self.boltAnimLeft.blit(self.image, (0, 0))  # отображаем анимацию движения
-            if up:  # если же прыгаем
-                self.boltAnimJumpLeft.blit(self.image, (0, 0))  # отображаем анимацию прыжка
+            if running:
+                self.xvel -= MOVE_EXTRA_SPEED
+                if not up:
+                    self.boltAnimLeftSuperSpeed.blit(self.image, (0, 0))
+            else:
+                if not up:
+                    self.boltAnimLeft.blit(self.image, (0, 0))
+            if up:
+                self.boltAnimJumpLeft.blit(self.image, (0, 0))
 
         if right:
-            self.xvel = MOVE_SPEED  # Право = x + n
+            self.xvel = MOVE_SPEED
             self.image.fill(Color(COLOR))
             if running:
                 self.xvel += MOVE_EXTRA_SPEED
@@ -415,7 +405,7 @@ class Player(sprite.Sprite):
             if up:
                 self.boltAnimJumpRight.blit(self.image, (0, 0))
 
-        if not (left or right):  # стоим, когда нет указаний идти
+        if not (left or right):
             self.xvel = 0
             if not up:
                 self.image.fill(Color(COLOR))
@@ -424,38 +414,38 @@ class Player(sprite.Sprite):
         if not self.onGround:
             self.yvel += GRAVITY
 
-        self.onGround = False  # Мы не знаем, когда мы на земле((
+        self.onGround = False
         self.rect.y += self.yvel
         self.collide(0, self.yvel, platforms)
 
-        self.rect.x += self.xvel  # переносим свои положение на xvel
+        self.rect.x += self.xvel
         self.collide(self.xvel, 0, platforms)
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
-            if sprite.collide_rect(self, p):  # если есть пересечение платформы с игроком
+            if sprite.collide_rect(self, p):
                 if isinstance(p, BlockDie) or isinstance(p, Monster) \
                         or isinstance(p, Saw):
-                    self.die()  # умираем
+                    self.die()
                 elif isinstance(p, BlockTeleport) or isinstance(p, InvisibleBlockTeleport):
                     self.teleporting(p.goX, p.goY)
-                elif isinstance(p, Princess):  # если коснулись принцессы
-                    self.winner = True  # победили!!!
+                elif isinstance(p, Princess):
+                    self.winner = True
                 else:
-                    if xvel > 0:  # если движется вправо
-                        self.rect.right = p.rect.left  # то не движется вправо
+                    if xvel > 0:
+                        self.rect.right = p.rect.left
 
-                    if xvel < 0:  # если движется влево
-                        self.rect.left = p.rect.right  # то не движется влево
+                    if xvel < 0:
+                        self.rect.left = p.rect.right
 
-                    if yvel > 0:  # если падает вниз
-                        self.rect.bottom = p.rect.top  # то не падает вниз
-                        self.onGround = True  # и становится на что-то твердое
-                        self.yvel = 0  # и энергия падения пропадает
+                    if yvel > 0:
+                        self.rect.bottom = p.rect.top
+                        self.onGround = True
+                        self.yvel = 0
 
-                    if yvel < 0:  # если движется вверх
-                        self.rect.top = p.rect.bottom  # то не движется вверх
-                        self.yvel = 0  # и энергия прыжка пропадает
+                    if yvel < 0:
+                        self.rect.top = p.rect.bottom
+                        self.yvel = 0
 
     def teleporting(self, goX, goY):
         self.rect.x = goX
@@ -471,7 +461,7 @@ class Player(sprite.Sprite):
             c = self.rect.x
         else:
             c = self.startX
-        self.teleporting(c, self.startY)  # перемещаемся в начальные координаты
+        self.teleporting(c, self.startY)
 
 
 def main():
@@ -479,20 +469,20 @@ def main():
     music()
     loadLevel1()
     pygame.init()
-    screen = pygame.display.set_mode(DISPLAY)  # Создаем окошко
-    pygame.display.set_caption("MAR.io")  # Пишем в шапку
-    bg = Surface((WIN_WIDTH, WIN_HEIGHT))  # Создание видимой поверхности, будем использовать как фон
-    bg.fill(Color(BACKGROUND_COLOR))     # Заливаем поверхность сплошным цветом
+    screen = pygame.display.set_mode(DISPLAY)
+    pygame.display.set_caption("MAR.io")
+    bg = Surface((WIN_WIDTH, WIN_HEIGHT))
+    bg.fill(Color(BACKGROUND_COLOR))
         
-    left = right = False  # по умолчанию - стоим
+    left = right = False
     up = False
     running = False
-    hero = Player(playerX, playerY)  # создаем героя по (x,y) координатам
+    hero = Player(playerX, playerY)
     entities.add(hero)
     timer = pygame.time.Clock()
-    x = y = 0  # координаты
-    for row in level:  # вся строка
-        for col in row:  # каждый символ
+    x = y = 0
+    for row in level:
+        for col in row:
             if col == "-":
                 pf = Platform(x, y)
                 entities.add(pf)
@@ -511,16 +501,16 @@ def main():
                 platforms.append(pr)
                 animatedEntities.add(pr)
 
-            x += PLATFORM_WIDTH #блоки платформы ставятся на ширине блоков
-        y += PLATFORM_HEIGHT    #то же самое и с высотой
-        x = 0                   #на каждой новой строчке начинаем с нуля
+            x += PLATFORM_WIDTH
+        y += PLATFORM_HEIGHT
+        x = 0
     
-    total_level_width = len(level[0])*PLATFORM_WIDTH # Высчитываем фактическую ширину уровня
-    total_level_height = len(level)*PLATFORM_HEIGHT   # высоту
+    total_level_width = len(level[0])*PLATFORM_WIDTH
+    total_level_height = len(level)*PLATFORM_HEIGHT
     
     camera = Camera(camera_configure, total_level_width, total_level_height) 
     
-    while not hero.winner: # Основной цикл программы
+    while not hero.winner:
         timer.tick(60)
         for e in pygame.event.get():
             if e.type == QUIT:
@@ -531,15 +521,15 @@ def main():
         pressed = pygame.key.get_pressed()
         up, left, right = [pressed[key] for key in (K_UP, K_LEFT, K_RIGHT)]
 
-        screen.blit(bg, (0, 0))      # Каждую итерацию необходимо всё перерисовывать
+        screen.blit(bg, (0, 0))
 
-        animatedEntities.update() # показываеaм анимацию 
-        monsters.update(platforms) # передвигаем всех монстров
-        camera.update(hero) # центризируем камеру относительно персонажа
-        hero.update(left, right, up, running, platforms) # передвижение
+        animatedEntities.update()
+        monsters.update(platforms)
+        camera.update(hero)
+        hero.update(left, right, up, running, platforms)
         for e in entities:
             screen.blit(e.image, camera.apply(e))
-        pygame.display.update()     # обновление и вывод всех изменений на экран
+        pygame.display.update()
 
     if hero.winner:
         print('U ARE WINNER! CONGRATULATIONS!!')
@@ -548,9 +538,9 @@ def main():
 
 
 level = []
-entities = pygame.sprite.Group()  # Все объекты
-animatedEntities = pygame.sprite.Group()  # все анимированные объекты, за исключением героя
-monsters = pygame.sprite.Group()  # Все передвигающиеся объекты
-platforms = []  # то, во что мы будем врезаться или опираться
+entities = pygame.sprite.Group()
+animatedEntities = pygame.sprite.Group()
+monsters = pygame.sprite.Group()
+platforms = []
 if __name__ == "__main__":
     main()
