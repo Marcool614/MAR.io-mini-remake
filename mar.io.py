@@ -30,35 +30,21 @@ ANIMATION_DELAY = 0.1 # скорость смены кадров
 ANIMATION_SUPER_SPEED_DELAY = 0.13 # скорость смены кадров при ускорении
 pygame.init()
 
-ANIMATION_MONSTERHORYSONTAL = [('%s/monsters/mushroom1.png' % ICON_DIR),
-                      ('%s/monsters/fire2.png' % ICON_DIR )]
+ANIMATION_MONSTERHORYSONTAL = ['mushroom1.png', 'fire1.png']
 
-ANIMATION_BLOCKTELEPORT = [
-            ('%s/blocks/portal2.png' % ICON_DIR),
-            ('%s/blocks/portal1.png' % ICON_DIR)]
+ANIMATION_BLOCKTELEPORT = ['portal2.png', 'portal1.png']
 
-ANIMATION_PRINCESS = [
-            ('%s/blocks/princess_l.png' % ICON_DIR),
-            ('%s/blocks/princess_r.png' % ICON_DIR)]
+ANIMATION_PRINCESS = ['princess_l.png', 'princess_r.png']
 
-ANIMATION_INBLOCKTELEPORT = [
-            ('%s/blocks/invisiblePortal.png' % ICON_DIR),
-            ('%s/blocks/invisiblePortal2.png' % ICON_DIR)]
+ANIMATION_INBLOCKTELEPORT = ['invisiblePortal.png', 'invisiblePortal2.png']
 
-ANIMATION_RIGHT = [('%s/mario/r1.png' % ICON_DIR),
-            ('%s/mario/r2.png' % ICON_DIR),
-            ('%s/mario/r3.png' % ICON_DIR),
-            ('%s/mario/r4.png' % ICON_DIR),
-            ('%s/mario/r5.png' % ICON_DIR)]
-ANIMATION_LEFT = [('%s/mario/l1.png' % ICON_DIR),
-            ('%s/mario/l2.png' % ICON_DIR),
-            ('%s/mario/l3.png' % ICON_DIR),
-            ('%s/mario/l4.png' % ICON_DIR),
-            ('%s/mario/l5.png' % ICON_DIR)]
-ANIMATION_JUMP_LEFT = [('%s/mario/jl.png' % ICON_DIR, 0.1)]
-ANIMATION_JUMP_RIGHT = [('%s/mario/jr.png' % ICON_DIR, 0.1)]
-ANIMATION_JUMP = [('%s/mario/j.png' % ICON_DIR, 0.1)]
-ANIMATION_STAY = [('%s/mario/0.png' % ICON_DIR, 0.1)]
+ANIMATION_RIGHT = ['r1.png', 'r2.png', 'r3.png', 'r4.png', 'r5.png']
+
+ANIMATION_LEFT = ['l1.png', 'l2.png', 'l3.png', 'l4.png', 'l5.png']
+ANIMATION_JUMP_LEFT = [('jl.png', 0.1)]
+ANIMATION_JUMP_RIGHT = [('jr.png', 0.1)]
+ANIMATION_JUMP = [('j.png', 0.1)]
+ANIMATION_STAY = [('0.png', 0.1)]
 
 
 def music():
@@ -280,7 +266,7 @@ class Platform(sprite.Sprite):
         sprite.Sprite.__init__(self)
         self.image = Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT))
         self.image.fill(Color(PLATFORM_COLOR))
-        self.image = image.load("%s/blocks/platform.png" % ICON_DIR)
+        self.image = image.load("platform.png")
         self.image.set_colorkey(Color(PLATFORM_COLOR))
         self.rect = Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
 
@@ -288,7 +274,7 @@ class Platform(sprite.Sprite):
 class BlockDie(Platform):
     def __init__(self, x, y):
         Platform.__init__(self, x, y)
-        self.image = image.load("%s/blocks/dieBlock.png" % ICON_DIR)
+        self.image = image.load("dieBlock.png")
 
 
 class BlockTeleport(Platform):
@@ -312,7 +298,7 @@ class InvisibleBlockTeleport(Platform):
         Platform.__init__(self, x, y)
         self.goX = goX  # координаты назначения перемещения
         self.goY = goY  # координаты назначения перемещения
-        self.image = image.load("%s/blocks/invisiblePortal.png" % ICON_DIR)
+        self.image = image.load("invisiblePortal.png")
 
     def update(self):
         self.image.fill(Color(PLATFORM_COLOR))
@@ -335,7 +321,7 @@ class Princess(Platform):
 class Saw(Platform):
     def __init__(self, x, y):
         Platform.__init__(self, x, y)
-        self.original = image.load("%s/blocks/saw.png" % ICON_DIR)
+        self.original = image.load("saw.png")
         self.image = self.original
         self.angle = 0
 
